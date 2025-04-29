@@ -1,0 +1,28 @@
+* {
+    Background: #c0c5c0;
+    text-align: center;
+    margin: 5px 10px 5px
+}
+
+h1 {
+    font-family: "Rubik Light", serif;
+    font-size: 4rem;
+    font-weight: bolder;
+}
+
+ol {
+    border: 2px solid #191616;
+}
+
+ol .partA {
+    font-family: "Rubik Light", serif;
+}
+
+p {
+    border:5px solid #191616;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-family: "Rubik Light", serif;
+    font-weight: bold;
+    margin: 50px 50px 50px;
+}
