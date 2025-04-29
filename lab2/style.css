@@ -26,3 +26,7 @@ p {
     font-weight: bold;
     margin: 50px 50px 50px;
 }
+a, em {
+    margin-left: 0;
+    margin-right: 0;
+}
