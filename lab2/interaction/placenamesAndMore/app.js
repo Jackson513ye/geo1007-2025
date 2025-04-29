@@ -91,11 +91,7 @@ var allFunctions = function () {
         searchFromInput();
       }
     });
-  // };
 
-  // document.addEventListener("DOMContentLoaded", allFunctions);
-
-  //   "use strict";
   var anotherGeonamesRequest = function (latitude, longitude) {
     var baseUrl =
       "http://api.geonames.org/findNearestIntersectionOSM?username=bktudelft";
@@ -105,6 +101,8 @@ var allFunctions = function () {
     request.open("GET", requestUrl, true);
     request.onload = function () {
       if (this.status >= 200 && this.status < 400) {
+        document.querySelector("main .forDebug2").textContent = "";
+        document.querySelector("#xmlDataAsTable").innerHTML = "";
         var textarea = document.createElement("textarea");
         textarea.rows = "20";
         textarea.cols = "60";
@@ -155,6 +153,7 @@ var allFunctions = function () {
   };
 
   var getAndDisplayMap = function (wms_request) {
+    document.querySelector("main .mapDiv").innerHTML = "";
     var img = document.createElement("img");
     img.style.display = "none";
     img.src = wms_request;
@@ -243,23 +242,19 @@ var allFunctions = function () {
   document.body.addEventListener("click", function (event) {
     if (event.target.matches("input.theButton2")) {
       console.log("a button2 clicked");
-      console.log(event.target.parentNode.parentNode.children);
       var lat, lng;
       var children = event.target.parentNode.parentNode.children;
       for (var i = 0; i < children.length; i++) {
         let elem = children[i];
         if (elem.matches("td[data-col='latitude']")) {
-          console.log(elem.textContent);
           lat = elem.textContent;
           break;
         }
       }
-
       children = event.target.parentNode.parentNode.children;
       for (var i = 0; i < children.length; i++) {
         let elem = children[i];
         if (elem.matches("td[data-col='longitude']")) {
-          console.log(elem.textContent);
           lng = elem.textContent;
           break;
         }
@@ -269,34 +264,26 @@ var allFunctions = function () {
 
     if (event.target.matches("input.theButton1")) {
       console.log("a button with class theButton1 clicked");
-
       var lat, lng;
       var children = event.target.parentNode.parentNode.children;
-      // console.log(children)
       for (var i = 0; i < children.length; i++) {
         let elem = children[i];
         if (elem.matches("td[data-col='latitude']")) {
-          console.log(elem.textContent);
           lat = elem.textContent;
           break;
         }
       }
-
       children = event.target.parentNode.parentNode.children;
       for (var i = 0; i < children.length; i++) {
         let elem = children[i];
         if (elem.matches("td[data-col='longitude']")) {
-          console.log(elem.textContent);
           lng = elem.textContent;
           break;
         }
       }
-
-      // let lat = 0
-      // let lng = 0
       requestWMSmap(lat, lng);
     }
   });
+};
 
 document.addEventListener("DOMContentLoaded", allFunctions);
-
