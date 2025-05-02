@@ -9,3 +9,6 @@ Lars van Dijk (5571308)
 
 ## GitHub page:
 https://github.com/Jackson513ye/geo1007-2025.git
+
+## Report link:
+https://docs.google.com/document/d/1Nn_5bzO-cVlMk-Z72a7ICBXNnHVrLz_4ii0nnX6GeGA/edit?usp=sharing
