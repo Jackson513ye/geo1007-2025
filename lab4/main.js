@@ -71,8 +71,21 @@ var sound = new L.tileLayer.wms(wms_sound_url, {
   pointerCursor: true,
 });
 
+// 3. a thematic WMS as overlay map
+var wms_parcels_url = "http://localhost:8080/geoserver/delft/wms?service=WMS&version=1.1.0&request=GetMap&layers=delft%3Aparcels&bbox=82345.359375%2C441848.15625%2C87383.8515625%2C449887.78125&width=481&height=768&srs=EPSG%3A28992&styles=&format=image%2Fpng";
+var parcels = new L.tileLayer.wms(wms_parcels_url, {
+  layers: ["vw_rivm_r96_20170912_lg_rijksweg2016lden"],
+  styles: "",
+  format: "image/png",
+  transparent: true,
+  attribution:
+      '© <a href="https://www.nationaalgeoregister.nl/geonetwork/srv/dut/catalog.search#/metadata/cb1ac266-b9e7-4adf-a2a2-d04f5d1f1d2c?tab=general"> Rijkswaterstaat</a>',
+  pointerCursor: true,
+});
+
 var overlays = {
   "Road noise [WMS]": sound,
+  "Parcels [WMS]": parcels,
 };
 
 var baseLayers = {
