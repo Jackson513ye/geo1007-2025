@@ -1,7 +1,7 @@
 # geo1007-2025
 
-MSc Geomatics Geo1007 Geoweb Technology - Assignment 1
-Lab 1 and Lab 2
+MSc Geomatics Geo1007 Geoweb Technology - Assignment 2
+Lab 3 and Lab 4
 
 ## Group members:
 Hongyu Ye (6286240)
