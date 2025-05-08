@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <meta name="description" content="Valuation demo">
+
+  <title>Valuation Demo</title>
+  <script type="text/javascript" src="./Cesium/Cesium.js"></script>
+</head>
+
+<body>
+  <style>
+    @import url(./cesium.css);
+  </style>
+  <div id="cesiumContainer" class="fullSize"></div>
+  <div id="toolbar"></div>
+  <script>
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0YzhmMjQ4MS05OTMzLTQzODMtYTEzMi1hMDAyZjFkOTUyNWUiLCJpZCI6ODA1MSwic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU1MTExODQwMn0.btrYdNobY3Q4r_xhej3i0R_nNTAdpWkyJZ1peV7hico';
+
+    function startup(Cesium) {
+      'use strict';
+      var viewer = new Cesium.Viewer('cesiumContainer');
+      var scene = viewer.scene;
+      viewer.scene.globe.depthTestAgainstTerrain = true;
+
+      // add valuation tileset
+      var tileset = scene.primitives.add(
+        new Cesium.Cesium3DTileset({
+          url: './tileset/tileset.json'
+        })
+      );
+
+      tileset.readyPromise.then(function (tileset) {
+        viewer.zoomTo(tileset, new Cesium.HeadingPitchRange(1.5, -0.4, tileset.boundingSphere.radius * 3.0));
+
+        // Override the default home button = reset to location of tileset instead of to world globe
+        viewer.homeButton.viewModel.command.beforeExecute.addEventListener(function (e) {
+          e.cancel = true;
+          viewer.zoomTo(tileset, new Cesium.HeadingPitchRange(1.5, -0.4, tileset.boundingSphere.radius * 3.0));
+        });
+
+        // styling tileset
+        var stylingAttribute = "totVal2020";
+        var colorVal = [
+          ["${BINAKODU} === '2516798'", 'rgba(255, 0, 209,0)'],
+          ["${BINAKODU} === '3000018'", 'rgba(255, 0, 209,0)'],
+          ["${" + stylingAttribute + "} >= 16100000", "rgb(77,0,0)"],
+          ["${" + stylingAttribute + "} >= 15900000", "rgb(81,2,0)"],
+          ["${" + stylingAttribute + "} >= 15700000", "rgb(86,4,0)"],
+          ["${" + stylingAttribute + "} >= 15500000", "rgb(91,7,0)"],
+          ["${" + stylingAttribute + "} >= 15300000", "rgb(96,9,0)"],
+          ["${" + stylingAttribute + "} >= 15100000", "rgb(100,11,0)"],
+          ["${" + stylingAttribute + "} >= 14900000", "rgb(105,14,0)"],
+          ["${" + stylingAttribute + "} >= 14700000", "rgb(110,16,0)"],
+          ["${" + stylingAttribute + "} >= 14500000", "rgb(115,19,0)"],
+          ["${" + stylingAttribute + "} >= 14300000", "rgb(119,21,0)"],
+          ["${" + stylingAttribute + "} >= 14100000", "rgb(124,23,0)"],
+          ["${" + stylingAttribute + "} >= 13900000", "rgb(129,26,0)"],
+          ["${" + stylingAttribute + "} >= 13700000", "rgb(134,28,0)"],
+          ["${" + stylingAttribute + "} >= 13500000", "rgb(138,30,0)"],
+          ["${" + stylingAttribute + "} >= 13300000", "rgb(143,33,0)"],
+          ["${" + stylingAttribute + "} >= 13100000", "rgb(148,35,0)"],
+          ["${" + stylingAttribute + "} >= 12900000", "rgb(153,38,0)"],
+          ["${" + stylingAttribute + "} >= 12700000", "rgb(159,40,1)"],
+          ["${" + stylingAttribute + "} >= 12500000", "rgb(165,43,3)"],
+          ["${" + stylingAttribute + "} >= 12300000", "rgb(172,46,4)"],
+          ["${" + stylingAttribute + "} >= 12100000", "rgb(178,49,6)"],
+          ["${" + stylingAttribute + "} >= 11900000", "rgb(184,52,8)"],
+          ["${" + stylingAttribute + "} >= 11700000", "rgb(191,54,9)"],
+          ["${" + stylingAttribute + "} >= 11500000", "rgb(197,57,11)"],
+          ["${" + stylingAttribute + "} >= 11300000", "rgb(204,60,13)"],
+          ["${" + stylingAttribute + "} >= 11100000", "rgb(210,63,14)"],
+          ["${" + stylingAttribute + "} >= 10900000", "rgb(216,66,16)"],
+          ["${" + stylingAttribute + "} >= 10700000", "rgb(223,68,17)"],
+          ["${" + stylingAttribute + "} >= 10500000", "rgb(229,71,19)"],
+          ["${" + stylingAttribute + "} >= 10300000", "rgb(235,74,21)"],
+          ["${" + stylingAttribute + "} >= 10100000", "rgb(242,77,22)"],
+          ["${" + stylingAttribute + "} >= 9900000", "rgb(248,80,24)"],
+          ["${" + stylingAttribute + "} >= 9700000", "rgb(255, 83, 26)"],
+          ["${" + stylingAttribute + "} >= 9500000", "rgb(255,87,24)"],
+          ["${" + stylingAttribute + "} >= 9300000", "rgb(255,91,22)"],
+          ["${" + stylingAttribute + "} >= 9100000", "rgb(255,96,21)"],
+          ["${" + stylingAttribute + "} >= 8900000", "rgb(255,100,19)"],
+          ["${" + stylingAttribute + "} >= 8700000", "rgb(255,104,17)"],
+          ["${" + stylingAttribute + "} >= 8500000", "rgb(255,109,16)"],
+          ["${" + stylingAttribute + "} >= 8300000", "rgb(255,113,14)"],
+          ["${" + stylingAttribute + "} >= 8100000", "rgb(255,118,13)"],
+          ["${" + stylingAttribute + "} >= 7900000", "rgb(255,122,11)"],
+          ["${" + stylingAttribute + "} >= 7700000", "rgb(255,126,9)"],
+          ["${" + stylingAttribute + "} >= 7500000", "rgb(255,131,8)"],
+          ["${" + stylingAttribute + "} >= 7300000", "rgb(255,135,6)"],
+          ["${" + stylingAttribute + "} >= 7100000", "rgb(255,139,4)"],
+          ["${" + stylingAttribute + "} >= 6900000", "rgb(255,144,3)"],
+          ["${" + stylingAttribute + "} >= 6700000", "rgb(255,148,1)"],
+          ["${" + stylingAttribute + "} >= 6500000", "rgb(255,153,0)"],
+          ["${" + stylingAttribute + "} >= 6300000", "rgb(253,154,0)"],
+          ["${" + stylingAttribute + "} >= 6100000", "rgb(251,155,0)"],
+          ["${" + stylingAttribute + "} >= 5900000", "rgb(250,156,0)"],
+          ["${" + stylingAttribute + "} >= 5700000", "rgb(248,157,0)"],
+          ["${" + stylingAttribute + "} >= 5500000", "rgb(247,158,0)"],
+          ["${" + stylingAttribute + "} >= 5300000", "rgb(245,160,0)"],
+          ["${" + stylingAttribute + "} >= 5100000", "rgb(244,161,0)"],
+          ["${" + stylingAttribute + "} >= 4900000", "rgb(242,162,0)"],
+          ["${" + stylingAttribute + "} >= 4700000", "rgb(240,163,0)"],
+          ["${" + stylingAttribute + "} >= 4500000", "rgb(239,164,0)"],
+          ["${" + stylingAttribute + "} >= 4300000", "rgb(237,166,0)"],
+          ["${" + stylingAttribute + "} >= 4100000", "rgb(236,167,0)"],
+          ["${" + stylingAttribute + "} >= 3900000", "rgb(234,168,0)"],
+          ["${" + stylingAttribute + "} >= 3700000", "rgb(233,169,0)"],
+          ["${" + stylingAttribute + "} >= 3500000", "rgb(231,170,0)"],
+          ["${" + stylingAttribute + "} >= 3300000", "rgb(230,172,0)"],
+          ["${" + stylingAttribute + "} >= 3100000", "rgb(231,176,14)"],
+          ["${" + stylingAttribute + "} >= 2900000", "rgb(233,181,28)"],
+          ["${" + stylingAttribute + "} >= 2700000", "rgb(234,186,43)"],
+          ["${" + stylingAttribute + "} >= 2500000", "rgb(236,191,57)"],
+          ["${" + stylingAttribute + "} >= 2300000", "rgb(237,196,71)"],
+          ["${" + stylingAttribute + "} >= 2100000", "rgb(239,200,86)"],
+          ["${" + stylingAttribute + "} >= 1900000", "rgb(240,205,100)"],
+          ["${" + stylingAttribute + "} >= 1700000", "rgb(242,210,115)"],
+          ["${" + stylingAttribute + "} >= 1500000", "rgb(244,215,129)"],
+          ["${" + stylingAttribute + "} >= 1300000", "rgb(245,220,143)"],
+          ["${" + stylingAttribute + "} >= 1100000", "rgb(247,224,158)"],
+          ["${" + stylingAttribute + "} >= 900000", "rgb(248,229,172)"],
+          ["${" + stylingAttribute + "} >= 700000", "rgb(250,234,186)"],
+          ["${" + stylingAttribute + "} >= 500000", "rgb(251,239,201)"],
+          ["${" + stylingAttribute + "} >= 300000", "rgb(253,244,215)"],
+          ["${" + stylingAttribute + "} >= 100000", "rgb(255,249,230)"],
+
+          ['true', 'rgb(255, 100, 255)']
+        ];
+
+        var properties = tileset.properties;
+        if (Cesium.defined(properties) && Cesium.defined(properties[stylingAttribute])) {
+          console.log('defined');
+          tileset.style = new Cesium.Cesium3DTileStyle({
+            color: {
+              conditions: colorVal
+            }
+          });
+        }
+      })
+    }
+
+    console.log('starting Cesium');
+    startup(Cesium);
+  </script>
+
+</html>

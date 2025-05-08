@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>OSM Buildings with BAG data for Delft</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #map {
+      width: 100%;
+      height: 75%;
+    }
+
+    .control {
+      position: absolute;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .control.tilt {
+      top: 0;
+    }
+
+    .control.rotation {
+      top: 45px;
+    }
+
+    .control.zoom {
+      top: 90px;
+    }
+
+    .control.zoom button {
+      font-weight: normal;
+    }
+
+    .control button {
+      width: 30px;
+      height: 30px;
+      margin: 15px 0 0 15px;
+      border: 1px solid #999999;
+      background: #ffffff;
+      opacity: 0.6;
+      border-radius: 5px;
+      box-shadow: 0 0 5px #666666;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .control button:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+  </style>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+
+    table,
+    td,
+    th {
+      border: 1px solid black;
+    }
+
+    .popup {
+      display: none;
+      position: absolute;
+      padding: 5px;
+      border: 1px solid black;
+      background-color: #bbbbbb;
+      font-size: 13px;
+    }
+  </style>
+
+  <link rel="stylesheet" href="OSMBuildings/OSMBuildings.css">
+  <script src="OSMBuildings/OSMBuildings.js"></script>
+  <script src="lib/wfsGeojson.js"></script>
+
+</head>
+
+<body>
+  <div id="map"></div>
+  <p id="errors"></p>
+  <div class="popup" id="onclickInfo">
+  </div>
+
+  <div class="control tilt">
+    <button class="dec">&#8601;</button>
+    <button class="inc">&#8599;</button>
+  </div>
+
+  <div class="control rotation">
+    <button class="inc">&#8630;</button>
+    <button class="dec">&#8631;</button>
+  </div>
+
+  <div class="control zoom">
+    <button class="dec">-</button>
+    <button class="inc">+</button>
+  </div>
+
+  <script>
+
+    var options = options || {};
+
+    var map = new GLMap('map', {
+      position: { latitude: 52.006042, longitude: 4.3700278 },
+      zoom: 16,
+      minZoom: 15,
+      maxZoom: 20,
+      state: true // stores map position/rotation in url
+    });
+
+    var osmb = new OSMBuildings({
+      baseURL: './OSMBuildings',
+      effects: ['shadows'],
+      attribution: '© 3D <a href="https://osmbuildings.org/copyright/">OSM Buildings</a>'
+    }).addTo(map);
+
+
+    osmb.addMapTiles('https://api.mapbox.com/styles/v1/osmbuildings/cjt9gq35s09051fo7urho3m0f/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoibWRldnJpZXMiLCJhIjoiY2p4dzZweml0MGJuaTNvbWw0dHR5NjFmciJ9.XQNwoOIQE01Xk65zpkXRZg', options,
+      {
+        attribution: '© Data <a href="https://openstreetmap.org/copyright/">OpenStreetMap</a> · © Map <a href="http://mapbox.com">Mapbox</a>'
+      }
+    );
+
+    // mdv 2018 geoweb course: switch default osmbuildings vector layer off
+    //osmb.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
+
+    var url_wfs = 'https://varioscale.bk.tudelft.nl/geoserver/geo1007/ows?';
+    var featuretype = 'geo1007:building';
+    var geometryName = 'geo1007:the_geom';
+    // These are the basic parameters for a WFS request 
+    //var params = 'service=WFS&version=2.0.0&request=GetFeature&outputFormat=application/json&srsName=EPSG:4326';
+    var params = 'service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&srsName=EPSG:4326';
+    // also needed: specify the WFS feature type that you request from the WFS service
+    params += '&typeName=' + featuretype;
+    // and the geometry property and the height (for on-the-fly extrusion by OSM)	
+    params += '&propertyName=' + geometryName + ',height';
+    // and in this use case the bouwjaar (= year that building was constructed)
+    params += ',bouwjaar';
+    // finally a selection filter, to select the tiles
+    params += '&cql_filter=t{z}_x \= {x} and t{z}_y \= {y}';
+
+    // possibility to add another selection criterion, like so
+    //params += ' and bouwjaar \< 1850';
+
+
+    // options for OSM addGeoJSONTiles 
+    options.fixedZoom = 15;
+    options.modifier = function (id, properties) {
+      var bouwjaar = properties['bouwjaar'];
+      //console.log(bouwjaar) ;
+      if (bouwjaar < 1795) { this.color = 'red'; }
+      else if (bouwjaar >= 1795 && bouwjaar < 1945) { this.color = 'yellow'; }
+      else if (bouwjaar >= 1945 && bouwjaar < 2008) { this.color = 'aquamarine'; }
+      else if (bouwjaar >= 2008) { this.color = 'blue'; }
+      else if (bouwjaar == 9999) { this.color = 'lightgray'; }
+      else { this.color = 'lightgray'; }
+    };
+
+
+    // WFS request and OSM options are passed on to OSM addGeoJSONTiles
+    osmb.addGeoJSONTiles(url_wfs + params, options);
+
+
+    //************************************************************
+
+    // standard OSM Buildings control panel upper left
+    var controlButtons = document.querySelectorAll('.control button');
+
+    for (var i = 0, il = controlButtons.length; i < il; i++) {
+      controlButtons[i].addEventListener('click', function (e) {
+        var button = this;
+        var parentClassList = button.parentNode.classList;
+        var direction = button.classList.contains('inc') ? 1 : -1;
+        var increment;
+        var property;
+
+        if (parentClassList.contains('tilt')) {
+          property = 'Tilt';
+          increment = direction * 10;
+        }
+        if (parentClassList.contains('rotation')) {
+          property = 'Rotation';
+          increment = direction * 10;
+        }
+        if (parentClassList.contains('zoom')) {
+          property = 'Zoom';
+          increment = direction * 1;
+        }
+        if (property) {
+          map['set' + property](map['get' + property]() + increment);
+        }
+      });
+    }
+
+
+    //************************************************************
+    // getfeature request
+
+    var infoDiv = document.getElementById('onclickInfo');
+
+    var url = url_wfs;
+    url += 'service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&srsName=EPSG:4326&';
+    url += 'typeName=' + featuretype + '&';
+
+    function divPopUp(id, e) {
+
+      var params = 'featureid=' + id;
+
+      GetFeatureWFS(url, params, function (validJson) {
+        console.log(validJson);
+
+        if (validJson) {
+
+          var content = '<b>' + validJson.features[0].id + '</b>';
+          content += '<table>';
+          content += '<tr>';
+          for (key in validJson.features[0].properties) {
+            content += '<td>' + key + '</td>';
+          }
+          content += '</tr>';
+          content += '<tr>';
+          for (key in validJson.features[0].properties) {
+            content += '<td>' + validJson.features[0].properties[key] + '</td>';
+          }
+          content += '</tr>';
+          content += '</table>';
+
+          infoDiv.innerHTML = content;
+          infoDiv.style.display = "block";
+        }
+
+      });
+
+    }
+
+
+    map.on('pointerdown', function (e) {
+      var id = osmb.getTarget(e.x, e.y, function (id) {
+
+        console.log(id);
+
+        if (id) {
+          document.body.style.cursor = 'pointer';
+          osmb.highlight(id, '#ffffff');
+
+          // note: the id is in fact featuretypename.id
+          // (remark: in case of linking to other data sources: use split('.') to get only the 'id' itself)
+          divPopUp(id, e);
+
+
+        } else {
+          document.body.style.cursor = 'default';
+          osmb.highlight(null);
+
+          infoDiv.style.display = "none";
+          infoDiv.innerHTML = null;
+        }
+
+      });
+    });
+
+
+  </script>
+</body>
+
+</html>

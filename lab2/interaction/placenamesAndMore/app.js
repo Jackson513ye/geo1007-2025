@@ -284,6 +284,10 @@ var allFunctions = function () {
       requestWMSmap(lat, lng);
     }
   });
+<<<<<<< HEAD
 };
 
+=======
+}
+>>>>>>> efa30b157dec2d1ea3a0d1848d75e18240cf7b7f
 document.addEventListener("DOMContentLoaded", allFunctions);
