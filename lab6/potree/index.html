@@ -49,6 +49,43 @@
 
 		viewer.setDescription("AHN-2 (measured: 2007 – 2012)");
 
+		Potree.loadPointCloud("http://ahn2.pointclouds.nl/potree_data/tile_all/cloud.js", "AHN-2 (processed by TU Delft)", function(e){
+			viewer.scene.addPointCloud(e.pointcloud);
+			
+			let material = e.pointcloud.material;
+			material.size = 0.8;
+			material.minSize = 2.0;
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.shape = Potree.PointShape.CIRCLE;
+			material.activeAttributeName = "elevation";
+			material.elevationRange = [-1, 65];
+
+			e.pointcloud.position.x += 3;
+			e.pointcloud.position.y -= 3;
+			e.pointcloud.position.z += 4;
+			
+			viewer.fitToScreen();
+		});
+
+		Potree.loadPointCloud("http://ahn2.pointclouds.nl/ahn2-hwh/metadata.json", "AHN-2 (processed by Het Waterschapshuis)", function(e){
+			e.pointcloud.visible = false
+			viewer.scene.addPointCloud(e.pointcloud);
+			
+			let material = e.pointcloud.material;
+			material.size = 0.8;
+			material.minSize = 2.0;
+			material.pointSizeType = Potree.PointSizeType.ADAPTIVE;
+			material.shape = Potree.PointShape.CIRCLE;
+			material.activeAttributeName = "elevation";
+			material.elevationRange = [-1, 65];
+
+			e.pointcloud.position.x += 3;
+			e.pointcloud.position.y -= 3;
+			e.pointcloud.position.z += 4;
+			
+			viewer.fitToScreen();
+		});
+
 		viewer.compass.setVisible(true);
 
 		viewer.loadGUI(() => {
