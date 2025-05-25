@@ -25,6 +25,7 @@
     </style>
 
     <title>Demo Map</title>
+    <script src="https://unpkg.com/sta-map"></script>
 </head>
 <body>
 
@@ -38,6 +39,20 @@
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
         maxZoom: 18
+    }).addTo(mymap);
+
+    L.stam({
+        baseUrl:
+            "http://localhost:8080/FROST-Server.HTTP-2.3.1/v1.1",
+        cluster: false,
+        clusterMin: 6,
+        queryObject: {
+            entityType: 'Things'
+        },
+        plot: {
+            startDate: new Date(Date.now() - 1000*60*60*24*60),
+            endDate: new Date()
+        }
     }).addTo(mymap);
 
 </script>

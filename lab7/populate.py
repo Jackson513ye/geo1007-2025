@@ -17,7 +17,7 @@ API_END_POINTS = {
     "Sensors": API_ROOT + "/Sensors",
     "Things": API_ROOT + "/Things"
     }
-DATA_PATH = Path('data/lab7/parking_available_20250512T1418Z.csv')
+DATA_PATH = Path('C:/geo1007/apache-tomcat-9.0.105/webapps/geoweb/data/lab7/parking_available_20250512T1418Z.csv')
 LOCATION_TO_DATASTREAM_MAP = {
     "P1":1,
     "P2":2,
